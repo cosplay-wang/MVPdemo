@@ -1,9 +1,6 @@
 package demo.cosplay.com.mvpdemo.modelImpl;
 
-import android.util.Log;
-
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,6 +9,7 @@ import java.io.IOException;
 import java.util.List;
 
 import demo.cosplay.com.mvpdemo.bean.NewsBean;
+import demo.cosplay.com.mvpdemo.bean.NewsRequestBean;
 import demo.cosplay.com.mvpdemo.model.NewsModel;
 import demo.cosplay.com.mvpdemo.util.gson.JsonUtil;
 import demo.cosplay.com.mvpdemo.util.http.HttpUtils;
@@ -60,16 +58,10 @@ public class NewsModelImpl implements NewsModel {
                     public void onSuccess(Response r) {
                         List<NewsBean> newsBeanList = null;
                         try {
-                            JSONObject jsonObject = null;
-                            jsonObject = new JSONObject(r.body().string());
-                            Gson gson = new Gson();
-
-                            newsBeanList = gson.fromJson(jsonObject.get("item").toString(),new TypeToken<List<NewsBean>>(){}.getType());
-
-                      //      newsBeanList = JsonUtil.parseJsonArrayWithGson(jsonObject.get("item").toString(), NewsBean.class);
+                            NewsRequestBean newsRequestBean= JsonUtil.GsonToBean(r.body().string(), NewsRequestBean.class);
+                            newsBeanList = newsRequestBean.getItem();
+                            //newsBeanList = JsonUtil.jsonToList(r.body().string().get("item").toString(), NewsBean.class);
                         } catch (IOException e) {
-                            e.printStackTrace();
-                        } catch (JSONException e) {
                             e.printStackTrace();
                         }
                         rx.onNext(newsBeanList);
